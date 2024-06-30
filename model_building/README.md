@@ -34,7 +34,7 @@ Split the data into 80% train and 20% test:
 
 <br/>
 After the steps above complete, please kindly check the jupyter lab (model_building.ipynb) file for the modeling steps.<br/>
-I split the output model into 5 zip files, since size exceeds github limit (100MB).<br/>
-These model files are saved in /model/model_final.zip.001 to model_final.zip.005<br/>
+I split the output model into 10 zip files, since size exceeds github limit (100MB).<br/>
+These model files are saved in /model/model_final.zip.001 to model_final.zip.010<br/>
 To load the model:<br/>
-If you use Windows, select these 5 zip files then right click, select show more option -> 7 zip -> Extract Here
+If you use Windows, select these 10 zip files then right click, select show more option -> 7 zip -> Extract Here
