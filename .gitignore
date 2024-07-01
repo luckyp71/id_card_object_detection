@@ -3,4 +3,5 @@
 /id_card_detection_api/.idea
 /id_card_detection_api/__pycache__
 /id_card_detection_api/dl_models
-/id_card_detection_api/cuda-keyring_1.1-1_all
+/id_card_detection_api/cuda-keyring_1.1-1_all.deb
+/id_card_detection_api/dl_models/model_final.pth
