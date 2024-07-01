@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, UploadFile, File
 from starlette import status
 
-from controller.id_detection_controller import detect_id_document, detect_blur, detect_glare, detect_hologram
+from controllers.id_detection_controller import detect_id_document, detect_blur, detect_glare, detect_hologram
 from models.ResponseModel import ResponseModel
 from PIL import Image
 import numpy as np

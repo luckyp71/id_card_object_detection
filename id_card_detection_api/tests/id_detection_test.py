@@ -1,7 +1,14 @@
+import urllib.parse
+
 from PIL import Image
 import numpy as np
 import pytest
-from controller.id_detection_controller import detect_id_document, detect_blur, detect_glare, detect_hologram
+from controllers.id_detection_controller import detect_id_document, detect_blur, detect_glare, detect_hologram
+from fastapi.testclient import TestClient
+from fastapi import status
+from main import app
+
+client = TestClient(app)
 
 @pytest.fixture
 def default_doc_id():
@@ -26,3 +33,7 @@ def test_detect_glare(default_doc_id):
 
 def test_detect_hologram(default_doc_id):
     assert detect_hologram(default_doc_id[1]) == True
+
+def test_analyze_id_detection():
+    response = client.post('/id_detection/analyze', data={"file":"assets/sample_id_card_1.jpg"})
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
