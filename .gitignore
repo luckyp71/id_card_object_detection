@@ -1,6 +1,10 @@
 .idea
+.pytest_cache
 /model_building/.ipynb_checkpoints
 /id_card_detection_api/.idea
 /id_card_detection_api/__pycache__
+/id_card_detection_api/.pytest_cache
 /id_card_detection_api/cuda-keyring_1.1-1_all.deb
 /id_card_detection_api/dl_models/model_final.pth
+/id_card_detection_api/test/__pycache__
+/id_card_detection_api/test/.pytest_cache

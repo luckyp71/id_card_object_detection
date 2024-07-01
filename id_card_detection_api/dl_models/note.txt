@@ -1,1 +1,1 @@
-Place the model_final.pth file in this directory
+Put the model_final.pth file in this directory
