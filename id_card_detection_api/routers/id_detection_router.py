@@ -1,6 +1,6 @@
 import time
 from typing import List
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, HTTPException
 from starlette import status
 from PIL import Image
 import numpy as np
@@ -20,6 +20,10 @@ async def analyze_id_detection(file: List[UploadFile] = File(...)):
     responses = []
     threads = []
     for f in file:
+        if f.filename == "":
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="No file uploaded")
+
         thread = threading.Thread(target=process_image, args=(responses, f,))
         threads.append(thread)
 
@@ -29,6 +33,7 @@ async def analyze_id_detection(file: List[UploadFile] = File(...)):
     for thread in threads:
         thread.join()
 
+    # Setup response
     response_model.response_code = status.HTTP_200_OK
     response_model.data = responses
     return response_model
@@ -50,8 +55,6 @@ def process_image(responses, f):
     # Hologram Detection
     is_hologram = detect_hologram(id_image)
 
-
-    # Setup response
     responses.append({"blur": {
             "is_blurry": is_blurry.__str__(),
             "value": blur_value},
