@@ -1,16 +1,12 @@
-import os
 import time
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from typing import List
 from fastapi import APIRouter, UploadFile, File
 from starlette import status
-
-from controllers.id_detection_controller import detect_id_document, detect_blur, detect_glare, detect_hologram
-from models.ResponseModel import ResponseModel
 from PIL import Image
 import numpy as np
 import threading
-import logging
+from controllers.id_detection_controller import detect_id_document, detect_blur, detect_glare, detect_hologram
+from models.ResponseModel import ResponseModel
 
 id_router = APIRouter(
     prefix="/id_detection",
@@ -30,14 +26,15 @@ async def analyze_id_detection(file: List[UploadFile] = File(...)):
     for thread in threads:
         thread.start()
 
-    for t in threads:
-        t.join()
+    for thread in threads:
+        thread.join()
 
     response_model.response_code = status.HTTP_200_OK
     response_model.data = responses
     return response_model
 
 def process_image(responses, f):
+    time.sleep(1)
     image = Image.open(f.file)
     image_arr = np.array(image)
 
@@ -53,7 +50,7 @@ def process_image(responses, f):
     # Hologram Detection
     is_hologram = detect_hologram(id_image)
 
-    time.sleep(0.1)
+
     # Setup response
     responses.append({"blur": {
             "is_blurry": is_blurry.__str__(),
