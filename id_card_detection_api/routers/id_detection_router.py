@@ -40,7 +40,7 @@ async def analyze_id_detection(file: List[UploadFile] = File(...)):
     # Here we will change the approach by using thread pools.
     # Thread pools will not destroy threads, they will reuse them when they finish their executions.
     # It has better thread management too, since we can specify the number of threads which will be executed concurrently.
-    # Define max worker as 80% of default of max worker
+    # Define max worker as 80% of default max worker
     max_worker = round(ThreadPoolExecutor()._max_workers*0.8)
     with ThreadPoolExecutor(max_workers=max_worker) as executor:
             responses.extend(executor.map(process_image, file))
