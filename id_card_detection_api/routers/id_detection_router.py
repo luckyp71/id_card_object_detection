@@ -4,7 +4,8 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from starlette import status
 from PIL import Image
 import numpy as np
-import threading
+# import threading
+from concurrent.futures import ThreadPoolExecutor
 from controllers.id_detection_controller import detect_id_document, detect_blur, detect_glare, detect_hologram
 from models.ResponseModel import ResponseModel
 
@@ -18,28 +19,40 @@ response_model = ResponseModel(response_code=0, data={})
 @id_router.post("/analyze")
 async def analyze_id_detection(file: List[UploadFile] = File(...)):
     responses = []
-    threads = []
+    # threads = []
     for f in file:
         if f.filename == "":
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail="No file uploaded")
+        # Sequential execution
+        # process_image(responses,f)
 
-        thread = threading.Thread(target=process_image, args=(responses, f,))
-        threads.append(thread)
+    #     thread = threading.Thread(target=process_image, args=(responses, f,))
+    #     threads.append(thread)
+    #
+    # for thread in threads:
+    #     thread.start()
+    #
+    # for thread in threads:
+    #     thread.join()
 
-    for thread in threads:
-        thread.start()
-
-    for thread in threads:
-        thread.join()
+    # As requests grow, using the previous approach is quite expensive since we create and destroy threads.
+    # Here we will change the approach by using thread pools.
+    # Thread pools will not destroy threads, they will reuse them when they finish their executions.
+    # It has better thread management too, since we can specify the number of threads which will be executed concurrently.
+    # Define max worker as 80% of default of max worker
+    max_worker = round(ThreadPoolExecutor()._max_workers*0.8)
+    with ThreadPoolExecutor(max_workers=max_worker) as executor:
+            responses.extend(executor.map(process_image, file))
 
     # Setup response
     response_model.response_code = status.HTTP_200_OK
     response_model.data = responses
     return response_model
 
-def process_image(responses, f):
-    time.sleep(1)
+# def process_image(response,f):
+def process_image(f):
+    time.sleep(0.1)
     image = Image.open(f.file)
     image_arr = np.array(image)
 
@@ -55,7 +68,17 @@ def process_image(responses, f):
     # Hologram Detection
     is_hologram = detect_hologram(id_image)
 
-    responses.append({"blur": {
+    # responses.append({"blur": {
+    #         "is_blurry": is_blurry.__str__(),
+    #         "value": blur_value},
+    #         "glare": {
+    #             "has_glare": has_glare.__str__(),
+    #             "value": int(glare_value)},
+    #         "hologram": {
+    #             "is_hologram": is_hologram.__str__()
+    #         }
+    #     })
+    return {"blur": {
             "is_blurry": is_blurry.__str__(),
             "value": blur_value},
             "glare": {
@@ -64,4 +87,4 @@ def process_image(responses, f):
             "hologram": {
                 "is_hologram": is_hologram.__str__()
             }
-        })
+        }
